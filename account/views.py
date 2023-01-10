@@ -4,6 +4,7 @@ from rest_framework import permissions
 from django.contrib.auth.models import User
 from .serializers import UserSerializer
 from rest_framework import status
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 class RegisterView(APIView):
@@ -20,3 +21,11 @@ class RegisterView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(TokenObtainPairView):
+    throttle_scope = "token_obtain"
+
+
+class LoginRefreshView(TokenRefreshView):
+    throttle_scope = "token_refresh"
