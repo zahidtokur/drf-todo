@@ -1,3 +1,4 @@
+import random
 from copy import deepcopy
 
 from rest_framework import status
@@ -6,10 +7,11 @@ from .models import Todo
 from .serializers import TodoSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 
 
 class TodoViewSet(ModelViewSet):
-
+    permission_classes = [IsAuthenticated]
     serializer_class = TodoSerializer
 
     def get_queryset(self):
@@ -29,6 +31,13 @@ class TodoViewSet(ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    @action(detail=True, methods=['get'])
-    def random(self, request, pk=None):
-        pass
+    @action(detail=False, methods=['get'])
+    def random(self, request):
+        todo_objs = list(self.get_queryset())
+        if todo_objs:
+            random_todo_obj = random.choice(todo_objs)
+            serializer = self.get_serializer(random_todo_obj)
+            data = serializer.data
+        else:
+            data = []
+        return Response(data, status=status.HTTP_200_OK)
