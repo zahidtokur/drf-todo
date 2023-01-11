@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
@@ -26,19 +27,14 @@ class RegisterView(APIView):
             return Response(serializer.errors, 
                 status=status.HTTP_400_BAD_REQUEST)
 
-
+@method_decorator(name='post',
+    decorator=swagger_auto_schema(**apidocs.LOGIN_VIEW))
 class LoginView(TokenObtainPairView):
     throttle_scope = "token_obtain"
 
-    @swagger_auto_schema(**apidocs.LOGIN_VIEW)
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
 
-
+@method_decorator(name='post',
+    decorator=swagger_auto_schema(**apidocs.LOGIN_REFRESH_VIEW))
 class LoginRefreshView(TokenRefreshView):
     throttle_scope = "token_refresh"
-
-    @swagger_auto_schema(**apidocs.LOGIN_REFRESH)
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
         

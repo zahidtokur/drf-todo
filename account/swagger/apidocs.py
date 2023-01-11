@@ -35,7 +35,7 @@ LOGIN_VIEW = {
     }
 }
 
-LOGIN_REFRESH = {
+LOGIN_REFRESH_VIEW = {
     'operation_description': 'Access token refresh endpoint. Using your refresh token, generate a new access token after it expires. Refresh tokens are valid for 4 hours. This endpoint is rate limited to 12 requests a day.',
     'operation_summary': 'refresh access token',
     'request_body': Schema(
