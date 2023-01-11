@@ -8,3 +8,8 @@ class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         exclude = ['creator']
+
+
+class TodoUpdateSerializer(TodoSerializer):
+    class Meta(TodoSerializer.Meta):
+        read_only_fields = ['creator_id']

@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 
 from todo.models import Todo
-from todo.serializers import TodoSerializer
+from todo.serializers import TodoSerializer, TodoUpdateSerializer
 from todo.swagger import apidocs
 
 
@@ -20,9 +20,17 @@ from todo.swagger import apidocs
     decorator=swagger_auto_schema(**apidocs.TODO_RETRIEVE_VIEW))
 @method_decorator(name='destroy', 
     decorator=swagger_auto_schema(**apidocs.TODO_DESTROY_VIEW))
+@method_decorator(name='update', 
+    decorator=swagger_auto_schema(**apidocs.TODO_UPDATE_VIEW))
+@method_decorator(name='partial_update', 
+    decorator=swagger_auto_schema(**apidocs.TODO_PARTIAL_UPDATE_VIEW))
 class TodoViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
-    serializer_class = TodoSerializer
+
+    def get_serializer_class(self):
+        if self.action in ('update', 'partial_update'):
+            return TodoUpdateSerializer
+        return TodoSerializer
 
     def get_queryset(self):
         """
@@ -54,15 +62,3 @@ class TodoViewSet(ModelViewSet):
         else:
             data = []
         return Response(data, status=status.HTTP_200_OK)
-
-    @swagger_auto_schema(**apidocs.TODO_UPDATE_VIEW)
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
-
-    @swagger_auto_schema(**apidocs.TODO_PARTIAL_UPDATE_VIEW)
-    def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
