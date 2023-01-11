@@ -4,11 +4,10 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from drf_yasg.openapi import Schema
 from drf_yasg.utils import swagger_auto_schema
-from account.swagger.apidoc_definitions import REGISTER_VIEW_DEFINITION, LOGIN_REFRESH_DEFINITION, LOGIN_VIEW_DEFINITION
 
-from .serializers import UserSerializer
+from account.swagger import apidocs
+from account.serializers import UserSerializer
 
 
 class RegisterView(APIView):
@@ -17,7 +16,7 @@ class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = UserSerializer
 
-    @swagger_auto_schema(**REGISTER_VIEW_DEFINITION)
+    @swagger_auto_schema(**apidocs.REGISTER_VIEW)
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
@@ -32,7 +31,7 @@ class RegisterView(APIView):
 class LoginView(TokenObtainPairView):
     throttle_scope = "token_obtain"
 
-    @swagger_auto_schema(**LOGIN_VIEW_DEFINITION)
+    @swagger_auto_schema(**apidocs.LOGIN_VIEW)
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
@@ -40,7 +39,7 @@ class LoginView(TokenObtainPairView):
 class LoginRefreshView(TokenRefreshView):
     throttle_scope = "token_refresh"
 
-    @swagger_auto_schema(**LOGIN_REFRESH_DEFINITION)
+    @swagger_auto_schema(**apidocs.LOGIN_REFRESH)
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
         
