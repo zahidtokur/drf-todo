@@ -11,8 +11,6 @@ from account.serializers import UserSerializer
 
 
 class RegisterView(APIView):
-    """
-    """
     permission_classes = [permissions.AllowAny]
     serializer_class = UserSerializer
 
@@ -25,7 +23,8 @@ class RegisterView(APIView):
             )
             return Response(status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(TokenObtainPairView):

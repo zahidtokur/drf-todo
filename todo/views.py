@@ -13,9 +13,13 @@ from todo.models import Todo
 from todo.serializers import TodoSerializer
 from todo.swagger import apidocs
 
-@method_decorator(name='list', decorator=swagger_auto_schema(**apidocs.TODO_LIST_VIEW))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(**apidocs.TODO_RETRIEVE_VIEW))
-@method_decorator(name='destroy', decorator=swagger_auto_schema(**apidocs.TODO_DESTROY_VIEW))
+
+@method_decorator(name='list', 
+    decorator=swagger_auto_schema(**apidocs.TODO_LIST_VIEW))
+@method_decorator(name='retrieve', 
+    decorator=swagger_auto_schema(**apidocs.TODO_RETRIEVE_VIEW))
+@method_decorator(name='destroy', 
+    decorator=swagger_auto_schema(**apidocs.TODO_DESTROY_VIEW))
 class TodoViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = TodoSerializer
@@ -36,7 +40,8 @@ class TodoViewSet(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, 
+            status=status.HTTP_201_CREATED, headers=headers)
 
     @swagger_auto_schema(**apidocs.TODO_RETRIEVE_RANDOM_VIEW)
     @action(detail=False, methods=['get'])
@@ -52,7 +57,11 @@ class TodoViewSet(ModelViewSet):
 
     @swagger_auto_schema(**apidocs.TODO_UPDATE_VIEW)
     def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
 
     @swagger_auto_schema(**apidocs.TODO_PARTIAL_UPDATE_VIEW)
     def partial_update(self, request, *args, **kwargs):
