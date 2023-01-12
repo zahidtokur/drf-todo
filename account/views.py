@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
+from django.contrib.auth.models import update_last_login
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
@@ -32,6 +33,12 @@ class RegisterView(APIView):
 class LoginView(TokenObtainPairView):
     throttle_scope = "token_obtain"
 
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == status.HTTP_200_OK:
+            user = User.objects.get(username=request.data.get('username'))
+            update_last_login(None, user)
+        return response
 
 @method_decorator(name='post',
     decorator=swagger_auto_schema(**apidocs.LOGIN_REFRESH_VIEW))
