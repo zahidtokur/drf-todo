@@ -6,6 +6,18 @@ TODO_CREATE_VIEW = {
     'operation_description': 'Enables the authenticated user' \
         ' to create a Todo object.',
     'operation_summary': 'create a todo object',
+    'request_body': Schema(
+        title='Todo',
+        type='object',
+        required=['title'],
+        properties={
+            'title': Schema(type='string', title='Title', maxLength=100, minLength=1),
+            'completed': Schema(type='boolean', title='Completed'),
+        }
+    ),
+    'responses': {
+        '201': TodoSerializer
+    }
 }
 
 TODO_RETRIEVE_VIEW = {
