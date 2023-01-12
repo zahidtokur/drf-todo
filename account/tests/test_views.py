@@ -11,7 +11,7 @@ class AuthViewsTestCase(APITestCase):
         self.dummy_password = 'password'
         self.dummy_email = 'test@email.com'
 
-    def createUser(self, username, password):
+    def __createUser(self, username, password):
         user = User.objects.create_user(username=username, password=password)
         return user
 
@@ -64,7 +64,7 @@ class AuthViewsTestCase(APITestCase):
         self.assertEqual(response_data['detail'], error_message)
 
         # Test registered user
-        self.createUser(**data)
+        self.__createUser(**data)
         response = self.client.post('/api/auth/login/', data=data)
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
@@ -77,7 +77,7 @@ class AuthViewsTestCase(APITestCase):
             'password': self.dummy_password
         }
 
-        self.createUser(**data)
+        self.__createUser(**data)
         login_response = self.client.post('/api/auth/login/', data=data)
         self.assertEqual(login_response.status_code, 200)
         login_response_data = login_response.json()
