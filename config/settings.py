@@ -139,7 +139,7 @@ SWAGGER_SETTINGS = {
    'SECURITY_DEFINITIONS': {
       'JWT Authentication': {
          'type': 'apiKey',
-         'name': 'Bearer',
+         'name': 'Authorization',
          'in': 'header'
       }
    }

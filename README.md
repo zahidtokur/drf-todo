@@ -58,4 +58,13 @@ Passwords for the initially loaded user objects are the same as their usernames,
 
 ## Documentation
 
-Documentation is on the home page.
+Documentation is on the home page. All the Todo endpoints require you to be authenticated. Follow these steps before using the endpoints:
+
+1. Login using the `auth/login/` endpoint with initially provided user data (ex: `test1` - `test1` username - password pair).
+2. Copy the access token that will be returned in the response body under the key `access`.
+3. Click `Authorize` button on the top-right of the page.
+4. You will be prompted to enter an api key. Enter the value `Bearer <access-token-you-copied>` and click `Authorize`.
+
+You can now use the endpoints. 
+
+**NOTE:** Access tokens expire in 15 minutes. If it expires, you can use your refresh token and generate a new access token using the `auth/login/refresh/` endpoint or repeat the previous steps. 
