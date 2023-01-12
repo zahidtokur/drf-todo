@@ -10,7 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 
 from todo.models import Todo
-from todo.serializers import TodoSerializer, TodoUpdateSerializer
+from todo.permissions import IsCreator
+from todo.serializers import TodoSerializer
 from todo.swagger import apidocs
 
 
@@ -20,25 +21,17 @@ from todo.swagger import apidocs
     decorator=swagger_auto_schema(**apidocs.TODO_RETRIEVE_VIEW))
 @method_decorator(name='destroy', 
     decorator=swagger_auto_schema(**apidocs.TODO_DESTROY_VIEW))
-@method_decorator(name='update', 
-    decorator=swagger_auto_schema(**apidocs.TODO_UPDATE_VIEW))
 @method_decorator(name='partial_update', 
     decorator=swagger_auto_schema(**apidocs.TODO_PARTIAL_UPDATE_VIEW))
 class TodoViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated]
-
-    def get_serializer_class(self):
-        if self.action in ('update', 'partial_update'):
-            return TodoUpdateSerializer
-        return TodoSerializer
+    permission_classes = [IsAuthenticated, IsCreator]
+    serializer_class = TodoSerializer
 
     def get_queryset(self):
-        """
-        Return a list of all the Todo objects
-        for the currently authenticated user.
-        """
         user = self.request.user
-        return Todo.objects.filter(creator_id=user.id)
+        if self.action in ('list', 'random'):
+            return Todo.objects.filter(creator_id=user.id)
+        return Todo.objects.all()
 
     @swagger_auto_schema(**apidocs.TODO_CREATE_VIEW)
     def create(self, request):
@@ -50,6 +43,17 @@ class TodoViewSet(ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, 
             status=status.HTTP_201_CREATED, headers=headers)
+
+    @swagger_auto_schema(**apidocs.TODO_UPDATE_VIEW)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        data = deepcopy(request.data)
+        data.update({"creator_id": self.request.user.id})
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
 
     @swagger_auto_schema(**apidocs.TODO_RETRIEVE_RANDOM_VIEW)
     @action(detail=False, methods=['get'])
