@@ -91,7 +91,23 @@ class TodoViewsTestCase(APITestCase):
             Todo.objects.filter(id__in=result_ids, creator_id=self.user.id).count(), 3)
 
     def test_retrieve_random_view(self):
-        pass
+        # Create ToDo objects for two users
+        different_user = self.__createUser(username='user_2', password='test_pw')
+        for i in range(3):
+            Todo.objects.create(creator=self.user, title=f'ToDo {i+1}')
+            Todo.objects.create(creator=different_user, title=f'ToDo {i+1}')
+
+        # Unauthorized request
+        retrieve_response = self.client.get('/api/todos/random/')
+        self.assertEqual(retrieve_response.status_code, 401)
+
+        # Authorized request
+        self.__authenticateUser()
+        retrieve_response = self.client.get('/api/todos/random/')
+        self.assertEqual(retrieve_response.status_code, 200)
+        retrieve_response_data = retrieve_response.json()
+        todo_obj_id = retrieve_response_data.get('id')
+        self.assertEqual(Todo.objects.get(id=todo_obj_id).creator_id, self.user.id)
 
     def test_update_view(self):
         todo_obj_1 = Todo.objects.create(creator=self.user, title='ToDo 1')
