@@ -52,7 +52,7 @@ python manage.py loaddata users
 python manage.py loaddata todos
 ```
 
-**NOTE:** If you encounter `UnicodeDecodeError` on loading data, follow the instructions on this [StackOverFlow question](https://stackoverflow.com/questions/28613102/last-login-field-is-not-updated-when-authenticating-using-tokenauthentication-in) and try again.
+**NOTE:** If you encounter `UnicodeDecodeError` on loading data, follow the instructions on this [StackOverFlow question](https://stackoverflow.com/questions/17843630/python-can-dumpdata-cannot-loaddata-back-unicodedecodeerror) and try again.
 
 Passwords for the initially loaded user objects are the same as their usernames, meaning if username is `test1`, then the password is also `test1`.
 
