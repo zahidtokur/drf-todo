@@ -11,7 +11,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 from todo.models import Todo
 from todo.permissions import IsCreator
-from todo.serializers import TodoSerializer
+from todo.serializers import TodoSerializer, TodoQueryParamSerializer
 from todo.swagger import apidocs
 
 
@@ -28,9 +28,18 @@ class TodoViewSet(ModelViewSet):
     serializer_class = TodoSerializer
 
     def get_queryset(self):
-        user = self.request.user
         if self.action in ('list', 'random'):
+            user = self.request.user
+            completed = self.request.query_params.get('completed')
+            serializer = TodoQueryParamSerializer(
+                data={'completed': completed})
+
+            if completed is not None and serializer.is_valid():
+                return Todo.objects.filter(
+                    creator_id=user.id, **serializer.validated_data)
+
             return Todo.objects.filter(creator_id=user.id)
+
         return Todo.objects.all()
 
     @swagger_auto_schema(**apidocs.TODO_CREATE_VIEW)

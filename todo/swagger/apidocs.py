@@ -1,5 +1,5 @@
 from drf_yasg.openapi import Schema
-from todo.serializers import TodoSerializer
+from todo.serializers import TodoSerializer, TodoQueryParamSerializer
 
 
 TODO_CREATE_VIEW = {
@@ -37,6 +37,7 @@ TODO_LIST_VIEW = {
     'operation_description': 'Lists all the Todo objects that' \
         ' are created by the authenticated user.',
     'operation_summary': 'list todo objects',
+    'query_serializer': TodoQueryParamSerializer
 }
 
 TODO_UPDATE_VIEW = {

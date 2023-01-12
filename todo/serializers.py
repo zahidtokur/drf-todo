@@ -8,3 +8,6 @@ class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         exclude = ['creator']
+
+class TodoQueryParamSerializer(serializers.Serializer):
+    completed = serializers.BooleanField(required=False, allow_null=True)
